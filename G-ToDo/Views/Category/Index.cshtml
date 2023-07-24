@@ -1,0 +1,95 @@
+ @{
+    ViewData["Title"] = "Categories";
+    ViewData["pageTitle"] = "Categories";
+    ViewData["PageActionText"] = "+ Create Category";
+    ViewData["PageActionUrl"] = "/category/upsert";
+ }
+@model List<Category>
+ <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="widget chart" >
+                <div class="p-4">
+                    <h5 class="fw-bold">Create New Category</h5>
+                </div>
+                    <div class="table-responsive">
+                  
+                        <table class="table table-striped table-inverse" id="categoryTable">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Category Id</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var cat in Model)
+                                {
+                                        
+                                <tr>
+                                    <td>@cat.Icon &nbsp; @cat.Name</td>
+                                     <td scope="row">@cat.CategoryId</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="/category/upsert?id=@cat.CategoryId" class="btn btn-success"><i class="fa fa-edit"></i></a>
+                                            <a id="deleteCategory" data-url="/category/upsert?id=@cat.CategoryId" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                                    
+                                </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="widget h-100" >
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <span></span> <i class="fas fa-home fa-3x"></i></span>  Widget</span>
+                </div>
+            </div>
+        </div>
+    <div>
+
+@section Scripts {
+    <script>
+            $(function(){
+                $('#categoryTable').DataTable();
+
+                $('body').on('click', '#deleteCategory', function (e) {
+                    e.preventDefault();
+                    let url = $(this).data('url');
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: url,
+                                type: "DELETE",
+                                success: function (data) {
+                                    if (data.code == 0) {
+                                        toastr.error(data.error);
+                                    } else {
+                                        Swal.fire(
+                                            'Deleted!',
+                                            data.msg,
+                                            'success'
+                                        )
+                                    location.reload()
+                                    }
+                                }
+                            });
+
+
+                        }
+                    }); 
+                 }) 
+            })
+    </script>
+}
